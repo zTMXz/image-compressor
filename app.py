@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, jsonify, send_from_directory, session, send_file
+from flask import Flask, render_template, request, jsonify,  \
+    send_from_directory, session, send_file, redirect, url_for
 import os
 import subprocess
 import shutil
@@ -94,6 +95,10 @@ def cleanup(identifier):
         if os.path.exists(user_folder):
             shutil.rmtree(user_folder)
     return jsonify({}), 200
+
+@app.route('/<path:invalid_path>')
+def redirect_wrong_url(invalid_path):
+    return redirect(url_for('home'))
 
 
 # if __name__ == '__main__':
