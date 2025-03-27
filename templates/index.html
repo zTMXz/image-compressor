@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Compressor</title>
+    <link rel="icon" type="image/x-icon" href="../static/fav.png">
+    <link rel="stylesheet" href="../static/css/style.css">
+</head>
+<body>
+    <h2>Изображения для сжатия</h2>
+    <div class="main-area" id="main-area">
+        <div class="drop-area" id="drop-area">
+            <p id="subtext-child">Перетяните файлы сюда или просто нажмите</p>
+            <div class="image-preview" id="image-preview"></div>
+        </div>
+        <div class="parameters-area" id="parameters-area">
+            <div class="beforeCompress">
+                <div class="parameter-input">
+                    <label for="widthvalue">Максимальная ширина</label>
+                    <input id="widthvalue" type="number" placeholder="1000" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                </div>
+                <div class="parameter-input">
+                    <label for="quality">Качество</label>
+                    <input id="quality" type="number" placeholder="80" min="0" max="100" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                </div>
+                <div class="parameter-input">
+                    <label for="saveformat">Тип сохранения</label>
+                    <select id="saveformat" type="text">
+                        <option value="jpeg">JPEG</option>
+                        <option value="png">PNG</option>
+                        <option value="webp">WebP</option>
+                    </select>
+                </div>
+
+                <div class="middle-btn">
+                    <button id="compress-button">Сжать изображения</button>
+                </div>
+            </div>
+            <div class="afterCompress">
+                <div class="text-center mb-10">
+                    Отлично, похоже все получилось!
+                    Хочешь попробовать еще раз?
+                </div>
+
+                <div class="middle-btn">
+                    <button id="again-button" onclick="location.reload()">Попробовать еще раз</button>
+                </div>
+            </div> 
+        </div>
+    </div>
+
+    <div class="show-only-after-upload" id="show-only-after-upload">
+        <h2>Сжатые изображения</h2>
+        <div class="compressed-preview" id="compressed-preview"></div>
+        <div class="middle-btn">
+            <button id="download-zip-button">Скачать ZIP-архив</button>
+        </div>
+    </div>
+
+    <script>
+        const identifier = Date.now();
+        const dropArea = document.getElementById('drop-area');
+        const imagePreview = document.getElementById('image-preview');
+        const compressButton = document.getElementById('compress-button');
+        const showResultArea = document.getElementById('show-only-after-upload')
+        const parametersArea = document.getElementById('parameters-area');
+        let filesToUpload = [];
+
+        window.addEventListener('load', function() {
+            document.getElementById('widthvalue').value = '';
+            document.getElementById('quality').value = '';
+            document.getElementById('saveformat').selectedIndex = 0; // Сбросить выбор первого элемента
+            imagePreview.innerHTML = '';
+            filesToUpload = [];
+            showResultArea.classList.remove('show');
+        });
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+            document.body.addEventListener(eventName, preventDefaults, false);
+        });
+
+        // Подсвечивание при наведении файлов
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, highlight, false);
+        });
+
+        // Снятие подсвечивания при отведении файлов
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, unhighlight, false);
+        });
+
+        // Обработка загруженных файлов
+        dropArea.addEventListener('drop', handleDrop, false);
+        dropArea.addEventListener('click', () => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.multiple = true;
+            input.accept = 'image/*';
+            input.onchange = (event) => {
+                handleFiles(event.target.files);
+            };
+            input.click();
+        });
+
+        compressButton.addEventListener('click', compressImages);
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        function highlight() {
+            dropArea.classList.add('hover');
+        }
+
+        function unhighlight() {
+            dropArea.classList.remove('hover');
+        }
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles(files);
+        }
+
+        function handleFiles(files) {
+            for (let file of files) {
+                filesToUpload.push(file);
+                addImageToPreview(file);
+            }
+        }
+
+        function addImageToPreview(file) {
+            const imgContainer = document.createElement('div');
+            imgContainer.style.position = 'relative';
+
+            const img = document.createElement('img');
+            img.src = URL.createObjectURL(file);
+            imgContainer.appendChild(img);
+
+            const removeBtn = document.createElement('div');
+            removeBtn.className = 'remove-btn';
+            removeBtn.onclick = (event) => {
+                event.stopPropagation();
+                removeImage(file, imgContainer);
+            };
+            removeBtn.innerHTML = `
+                <svg width="25" height="25" viewBox="0 0 512 512"  fill="#000">
+                    <path d="M437.5,386.6L306.9,256l130.6-130.6c14.1-14.1,14.1-36.8,0-50.9c-14.1-14.1-36.8-14.1-50.9,0L256,205.1L125.4,74.5  c-14.1-14.1-36.8-14.1-50.9,0c-14.1,14.1-14.1,36.8,0,50.9L205.1,256L74.5,386.6c-14.1,14.1-14.1,36.8,0,50.9  c14.1,14.1,36.8,14.1,50.9,0L256,306.9l130.6,130.6c14.1,14.1,36.8,14.1,50.9,0C451.5,423.4,451.5,400.6,437.5,386.6z"/>
+                </svg>
+            `;
+            imgContainer.appendChild(removeBtn);
+
+            imagePreview.appendChild(imgContainer);
+        }
+
+        function removeImage(file, imgContainer) {
+            filesToUpload = filesToUpload.filter(f => f !== file);
+            imagePreview.removeChild(imgContainer);
+        }
+
+        function compressImages() {
+            if (filesToUpload.length == 0) {
+                alert('Сначала загрузите фотографии!');
+                return;
+            }
+
+            const widthValue = document.getElementById('widthvalue');
+            const quality = document.getElementById('quality');
+            const saveFormat = document.getElementById('saveformat');
+
+            const formData = new FormData();
+            formData.append('identifier', identifier);
+            formData.append('width_value', widthValue.value);
+            formData.append('quality', quality.value);
+            formData.append('save_format', saveFormat.value);
+
+            filesToUpload.forEach(file => {
+                formData.append('files', file);
+            });
+
+            // Отправляем данные на сервер
+            fetch('/compress-image', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('main-area').classList.add('compressed');
+                dropArea.removeChild(document.getElementById('subtext-child'));
+
+                var par = dropArea.parentNode;
+                var clone = dropArea.cloneNode(false);
+                par.replaceChild(clone, dropArea);
+                
+                for (var index = dropArea.childNodes.length - 1; index >= 0; --index) {
+                    clone.insertBefore(dropArea.childNodes[index], clone.childNodes[0]);
+                }
+                
+                showResultArea.classList.add('show');
+                console.log(data.images);
+
+                // Отображаем сжатые изображения
+                const compressedPreview = document.getElementById('compressed-preview');
+                compressedPreview.innerHTML = ''; // Очищаем предыдущие изображения
+                for (let imgName of data.images) {
+                    const img = document.createElement('img');
+                    img.src = `/${identifier}/${imgName}`; // Указываем путь к сжатым изображениям
+                    compressedPreview.appendChild(img);
+                }
+            })
+            .catch(error => {
+                console.log('Error: ' + error);
+            });
+        }
+
+        document.getElementById('download-zip-button').addEventListener('click', function() {
+            window.location.href = `/download-zip/${identifier}`;
+        });
+
+        window.addEventListener('unload', function() {
+            alert(1234);
+            navigator.sendBeacon(`/cleanup/${identifier}`);
+        });
+    </script>
+</body>
+</html>

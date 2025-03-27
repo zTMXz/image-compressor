@@ -1,0 +1,186 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f4f4f4;
+}
+
+h1, h2 {
+    color: #333;
+    text-align: center;
+}
+
+.main-area {
+    display: flex;
+    gap: 20px;
+    
+}
+
+.drop-area {
+    border: 2px dashed #ccc;
+    border-radius: 5px;
+    padding: 20px;
+    text-align: center;
+    /* margin-bottom: 20px; */
+    background-color: #fff;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+}
+
+.drop-area.hover {
+    border-color: #5cb85c;
+}
+
+.parameters-area {
+    position: sticky;
+    top: 10px;
+
+    width: 300px;
+    max-height: 290px;
+    padding: 15px;
+
+    display: flex;
+    flex-direction: column;
+    
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fff;
+}
+
+.parameter-input {
+    margin: 10px 0;
+    display: flex;
+    flex-direction: column;
+
+    label {
+        color: #464646;
+        font-size: 16px;
+        margin-bottom: 2px;
+    }
+
+    input, select {
+        padding: 5px 10px;
+        border-radius: 5px;
+        border: 1px solid #b6b6b6;
+        font-size: 18px;
+
+        background: #fff;
+    }
+}
+
+.parameters-area .middle-btn {
+    margin-top: auto;
+}
+
+.parameters-area .afterCompress {
+    display: none;
+}
+
+.compressed .parameters-area .beforeCompress {
+    display: none;
+} 
+
+.compressed .parameters-area .afterCompress {
+    display: unset;
+    margin: auto;
+}
+
+button {
+    padding: 10px 15px;
+    background-color: #5cb85c;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #4cae4c;
+}
+
+button:disabled {
+    background-color: #a2cca2;
+    cursor: unset;
+}
+
+.image-preview, 
+.compressed-preview {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+.compressed-preview {
+    margin-bottom: 20px;
+}
+
+.image-preview img, 
+.compressed-preview img {
+    width: 250px;
+    height: 165px;
+    object-fit: cover;
+
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.remove-btn {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+
+    width: 25px;
+    height: 25px;
+    padding: 5px;
+    border-radius: 5px;
+    
+    background-color: #bfbfbf38;
+
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+
+    svg {
+        transition: all 0.3s ease-in-out;
+    }
+}
+
+.remove-btn:hover {
+    background-color: #bfbfbf73;
+    svg {
+        fill: #db1e1e;
+    }
+}
+
+.compressed .remove-btn {
+    display: none;
+}
+
+.middle-btn {
+    display: flex;
+    justify-content: center;
+}
+
+.show-only-after-upload {
+    display: none;
+}
+
+.show-only-after-upload.show {
+    display: unset;
+}
+
+.d-none {
+    display: none;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.mb-10 {
+    margin-bottom: 10px;
+}
