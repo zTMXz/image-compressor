@@ -134,11 +134,21 @@
 
         function addImageToPreview(file) {
             const imgContainer = document.createElement('div');
-            imgContainer.style.position = 'relative';
+            imgContainer.classList.add('img-container');
 
             const img = document.createElement('img');
             img.src = URL.createObjectURL(file);
-            imgContainer.appendChild(img);
+
+            const sizeText = document.createElement('p');
+            sizeText.classList.add('img-size');
+
+            const sizeInKB = Math.round(file.size / 1024 * 100) / 100;
+            if (sizeInKB >= 1024) {
+                const sizeInMB = (sizeInKB / 1024).toFixed(2); // Размер в МБ с 2 знаками после запятой
+                sizeText.textContent = `${sizeInMB} MB`;
+            } else {
+                sizeText.textContent = `${sizeInKB} KB`;
+            }
 
             const removeBtn = document.createElement('div');
             removeBtn.className = 'remove-btn';
@@ -151,6 +161,9 @@
                     <path d="M437.5,386.6L306.9,256l130.6-130.6c14.1-14.1,14.1-36.8,0-50.9c-14.1-14.1-36.8-14.1-50.9,0L256,205.1L125.4,74.5  c-14.1-14.1-36.8-14.1-50.9,0c-14.1,14.1-14.1,36.8,0,50.9L205.1,256L74.5,386.6c-14.1,14.1-14.1,36.8,0,50.9  c14.1,14.1,36.8,14.1,50.9,0L256,306.9l130.6,130.6c14.1,14.1,36.8,14.1,50.9,0C451.5,423.4,451.5,400.6,437.5,386.6z"/>
                 </svg>
             `;
+
+            imgContainer.appendChild(img);
+            imgContainer.appendChild(sizeText);
             imgContainer.appendChild(removeBtn);
 
             imagePreview.appendChild(imgContainer);
@@ -205,11 +218,21 @@
                 // Отображаем сжатые изображения
                 const compressedPreview = document.getElementById('compressed-preview');
                 compressedPreview.innerHTML = ''; // Очищаем предыдущие изображения
-                for (let imgName of data.images) {
+                
+                data.images.forEach(imgData => {
+                    const imgContainer = document.createElement('div');
+                    imgContainer.classList.add('img-container');
                     const img = document.createElement('img');
-                    img.src = `/${identifier}/${imgName}`; // Указываем путь к сжатым изображениям
-                    compressedPreview.appendChild(img);
-                }
+                    img.src = `/${identifier}/${imgData.filename}`; // Указываем путь к сжатым изображениям
+                    
+                    const sizeText = document.createElement('p');
+                    sizeText.classList.add('img-size');
+                    sizeText.textContent = `${imgData.size} KB`; // Добавляем размер изображения
+
+                    imgContainer.appendChild(img);
+                    imgContainer.appendChild(sizeText);
+                    compressedPreview.appendChild(imgContainer);
+                });
             })
             .catch(error => {
                 console.log('Error: ' + error);
