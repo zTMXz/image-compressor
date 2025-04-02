@@ -126,7 +126,7 @@ button:disabled {
     object-fit: cover;
 
     border: 1px solid #ddd;
-    border-radius: 5px;
+    /* border-radius: 5px; */
 }
 
 .remove-btn {
@@ -158,6 +158,30 @@ button:disabled {
 
 .compressed .remove-btn {
     display: none;
+}
+
+.img-container {
+    position: relative;
+    height: 165px;
+    width: 250px;
+
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.img-container .img-size {
+    position: absolute;
+    bottom: 0;
+
+    margin: 0;
+    padding: 5px;
+
+    background: #00000059;
+    width: calc(100% - 10px);
+
+    color: #fff;
+    text-align: right;
+    font-size: 14px;
 }
 
 .middle-btn {
