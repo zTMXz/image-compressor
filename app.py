@@ -62,8 +62,15 @@ def compress_image():
         result = subprocess.run(cmd_command, shell=True, capture_output=True, text=True, check=True)
 
         # Получаем список сжатых изображений
-        compressed_images = [img for img in os.listdir(user_folder + '/success') if img.endswith(save_format)]
+        compressed_images = []
+        for img in os.listdir(user_folder + '/success'):
+            if img.endswith(save_format):
+                img_path = os.path.join(user_folder + '/success', img)
+                img_size = os.path.getsize(img_path) / 1024  # Размер в КБ
+                compressed_images.append({'filename': img, 'size': round(img_size, 2)})
+
         return jsonify({'status': 'success', 'output': result.stdout, 'images': compressed_images}), 200
+    
     except subprocess.CalledProcessError as e:
         return jsonify({'status': 'error', 'output': e.stderr}), 500
 
